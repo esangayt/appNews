@@ -1,0 +1,7 @@
+{
+  "name": "appNews",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
