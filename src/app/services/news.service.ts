@@ -4,7 +4,6 @@ import {environment} from "../../environments/environment";
 import {map, Observable, of, tap} from "rxjs";
 import {Article, ArticlesByCategoryAndPage, NewsResponse} from "../interfaces";
 
-
 const apiKey = environment.apiKey;
 const apiUrl = environment.apiUrl;
 
@@ -31,12 +30,12 @@ export class NewsService {
     return this.getTopHeadlinesByCategory('business');
   }
 
-  getTopHeadlinesByCategory(category: string, loadMore: boolean=false):Observable<Article[]>{
-    if (loadMore){
+  getTopHeadlinesByCategory(category: string, loadMore: boolean = false): Observable<Article[]> {
+    if (loadMore) {
       return this.getArticleByCategory(category);
     }
 
-    if(this.articlesByCategoryAndPage[category] && !loadMore){
+    if (this.articlesByCategoryAndPage[category] && !loadMore) {
       return of(this.articlesByCategoryAndPage[category].articles)
     }
 
@@ -44,7 +43,6 @@ export class NewsService {
   }
 
   private getArticleByCategory(category: string): Observable<Article[]> {
-
     if (!Object.keys(this.articlesByCategoryAndPage).includes(category)) {
       this.articlesByCategoryAndPage[category] = {
         page: 0,
@@ -54,19 +52,18 @@ export class NewsService {
 
     const page = this.articlesByCategoryAndPage[category].page + 1;
 
+    //Toma cada 20 elementos
     return this.executeQuery<NewsResponse>(`/top-headlines?category=${category}&page=${page}`)
       .pipe(
-        tap(articles => {
-          console.log(articles)
-        }),
         map(({articles}) => {
-
           if (articles.length === 0) return this.articlesByCategoryAndPage[category].articles
 
           this.articlesByCategoryAndPage[category] = {
             page,
             articles: [...this.articlesByCategoryAndPage[category].articles, ...articles]
           }
+          console.log('getArticleByCategory', category, this.articlesByCategoryAndPage[category].page)
+          console.log('lenght of articles', this.articlesByCategoryAndPage[category].articles.length)
 
           return this.articlesByCategoryAndPage[category].articles
         })
